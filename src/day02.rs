@@ -16,13 +16,11 @@ fn parse(line: &str) -> Option<(Policy, &str)> {
     Some((policy, *segments.get(2)?))
 }
 
-#[allow(unused)]
 fn match_policy_1(policy: &Policy, pass: &str) -> bool {
     let n = pass.chars().filter(|&c| c == policy.character).count();
     n >= policy.min && n <= policy.max
 }
 
-#[allow(unused)]
 fn match_policy_2(policy: &Policy, pass: &str) -> bool {
     [policy.min, policy.max]
         .iter()
@@ -32,13 +30,28 @@ fn match_policy_2(policy: &Policy, pass: &str) -> bool {
         == 1
 }
 
-fn main() {
-    let input = include_str!("INPUT");
-    let n = input
-        .lines()
-        .filter_map(parse)
-        .filter(|pair| match_policy_2(&pair.0, pair.1))
-        .count();
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    println!("n = {}", n);
+    fn common(matcher: impl Fn(&Policy, &str) -> bool) {
+        let input = include_str!("../inputs/day02");
+        let n = input
+            .lines()
+            .filter_map(parse)
+            .filter(|pair| matcher(&pair.0, pair.1))
+            .count();
+
+        println!("n = {}", n);
+    }
+
+    #[test]
+    fn part1() {
+        common(match_policy_1)
+    }
+
+    #[test]
+    fn part2() {
+        common(match_policy_2)
+    }
 }

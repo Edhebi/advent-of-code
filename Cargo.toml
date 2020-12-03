@@ -1,2 +1,5 @@
-[workspace]
-members = ["2020/*"]
+[package]
+name = "advent-of-code"
+version = "0.1.0"
+authors = ["Léo Masson <lmasson@edhebi.info>"]
+edition = "2018"
