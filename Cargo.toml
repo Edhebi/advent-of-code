@@ -3,3 +3,6 @@ name = "advent-of-code"
 version = "0.1.0"
 authors = ["Léo Masson <lmasson@edhebi.info>"]
 edition = "2018"
+
+[dependencies]
+regex = "1.4.2"
