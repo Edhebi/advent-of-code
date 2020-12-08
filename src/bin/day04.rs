@@ -1,3 +1,4 @@
+use regex::Regex;
 #[derive(Copy, Clone)]
 struct State<V: Fn(&str, &str) -> bool> {
     fields: Option<u8>,
@@ -69,55 +70,53 @@ impl<V: Fn(&str, &str) -> bool> State<V> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use regex::Regex;
-
-    fn common(validator: impl Fn(&str, &str) -> bool) {
-        let input = include_str!("../inputs/day04");
-        let mut state = State::new(validator);
-        for line in input.lines() {
-            state.step(line);
-        }
-        state.step_last();
-        println!("n = {}", state.count());
+fn common(validator: impl Fn(&str, &str) -> bool) -> usize {
+    let input = include_str!("../inputs/day04");
+    let mut state = State::new(validator);
+    for line in input.lines() {
+        state.step(line);
     }
+    state.step_last();
+    state.count()
+}
 
-    #[test]
-    fn part1() {
-        common(|_, _| true)
-    }
+fn part1() -> usize {
+    common(|_, _| true)
+}
 
-    #[test]
-    fn part2() {
-        let hgt_re = Regex::new("^([0-9]+)(cm|in)$").unwrap();
-        let hcl_re = Regex::new("^#[0-9a-f]{6}$").unwrap();
-        let pid_re = Regex::new("^[0-9]{9}$").unwrap();
+fn part2() -> usize {
+    let hgt_re = Regex::new("^([0-9]+)(cm|in)$").unwrap();
+    let hcl_re = Regex::new("^#[0-9a-f]{6}$").unwrap();
+    let pid_re = Regex::new("^[0-9]{9}$").unwrap();
 
-        common(|key, value| match key {
-            "byr" => (1920..=2002).contains(&value.parse().unwrap_or(0)),
-            "iyr" => (2010..=2020).contains(&value.parse().unwrap_or(0)),
-            "eyr" => (2020..=2030).contains(&value.parse().unwrap_or(0)),
-            "hgt" => hgt_re
-                .captures(value)
-                .map(|c| {
-                    let h = c.get(1).unwrap().as_str().parse().unwrap();
-                    match c.get(2).unwrap().as_str() {
-                        "cm" => (150..=193).contains(&h),
-                        "in" => (59..=76).contains(&h),
-                        _ => false,
-                    }
-                })
-                .unwrap_or(false),
-            "hcl" => hcl_re.is_match(value),
-            "ecl" => match value {
-                "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => true,
-                _ => false,
-            },
-            "pid" => pid_re.is_match(value),
-            "cid" => true,
+    common(|key, value| match key {
+        "byr" => (1920..=2002).contains(&value.parse().unwrap_or(0)),
+        "iyr" => (2010..=2020).contains(&value.parse().unwrap_or(0)),
+        "eyr" => (2020..=2030).contains(&value.parse().unwrap_or(0)),
+        "hgt" => hgt_re
+            .captures(value)
+            .map(|c| {
+                let h = c.get(1).unwrap().as_str().parse().unwrap();
+                match c.get(2).unwrap().as_str() {
+                    "cm" => (150..=193).contains(&h),
+                    "in" => (59..=76).contains(&h),
+                    _ => false,
+                }
+            })
+            .unwrap_or(false),
+        "hcl" => hcl_re.is_match(value),
+        "ecl" => match value {
+            "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => true,
             _ => false,
-        })
-    }
+        },
+        "pid" => pid_re.is_match(value),
+        "cid" => true,
+        _ => false,
+    })
+}
+
+fn main() {
+    println!("Day 4:");
+    println!("1: {}", part1());
+    println!("2: {}", part2());
 }

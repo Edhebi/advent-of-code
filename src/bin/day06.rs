@@ -37,25 +37,24 @@ impl<M: Fn(u32, u32) -> u32> State<M> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+fn common(init: u32, merge: impl Fn(u32, u32) -> u32) -> usize {
+    let input = include_str!("../inputs/day06");
+    let mut state = State::new(init, merge);
+    input.lines().for_each(|line| state.step(line));
+    state.step_last();
+    state.count()
+}
 
-    fn common(init: u32, merge: impl Fn(u32, u32) -> u32) {
-        let input = include_str!("../inputs/day06");
-        let mut state = State::new(init, merge);
-        input.lines().for_each(|line| state.step(line));
-        state.step_last();
-        println!("n = {}", state.count());
-    }
+fn part1() -> usize {
+    common(0, |a, b| a | b)
+}
 
-    #[test]
-    fn part1() {
-        common(0, |a, b| a | b);
-    }
+fn part2() -> usize {
+    common(0x03FFFFFF, |a, b| a & b)
+}
 
-    #[test]
-    fn part2() {
-        common(0x03FFFFFF, |a, b| a & b);
-    }
+fn main() {
+    println!("Day 6:");
+    println!("1: {}", part1());
+    println!("2: {}", part2());
 }
