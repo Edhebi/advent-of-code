@@ -17,7 +17,7 @@ fn sum3(entries: &HashSet<i32>, target: i32) -> Option<(i32, i32, i32)> {
 
 fn entries() -> HashSet<i32> {
     let input = include_str!("../inputs/day01");
-    input.lines().filter_map(|s| s.parse().ok()).collect()
+    input.lines().map(|s| s.parse().unwrap()).collect()
 }
 
 fn part1() -> i32 {

@@ -4,6 +4,7 @@
 name = "advent-of-code"
 version = "0.1.0"
 dependencies = [
+ "boolinator",
  "lazy_static",
  "regex",
 ]
@@ -16,6 +17,12 @@ checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "boolinator"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cfa8873f51c92e232f9bac4065cddef41b714152812bfc5f7672ba16d6ef8cd9"
 
 [[package]]
 name = "lazy_static"

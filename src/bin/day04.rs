@@ -1,4 +1,6 @@
+use boolinator::Boolinator;
 use regex::Regex;
+
 #[derive(Copy, Clone)]
 struct State<V: Fn(&str, &str) -> bool> {
     fields: Option<u8>,
@@ -52,11 +54,7 @@ impl<V: Fn(&str, &str) -> bool> State<V> {
             "cid" => 1 << 7,
             _ => return None,
         };
-        if (self.validator)(key, value) {
-            Some(fields)
-        } else {
-            None
-        }
+        (self.validator)(key, value).as_some(fields)
     }
 
     fn parse(&self, line: &str) -> Option<u8> {
@@ -73,9 +71,7 @@ impl<V: Fn(&str, &str) -> bool> State<V> {
 fn common(validator: impl Fn(&str, &str) -> bool) -> usize {
     let input = include_str!("../inputs/day04");
     let mut state = State::new(validator);
-    for line in input.lines() {
-        state.step(line);
-    }
+    input.lines().for_each(|line| state.step(line));
     state.step_last();
     state.count()
 }
@@ -85,7 +81,7 @@ fn part1() -> usize {
 }
 
 fn part2() -> usize {
-    let hgt_re = Regex::new("^([0-9]+)(cm|in)$").unwrap();
+    let hgt_re = Regex::new("^(?P<height>[0-9]+)(?P<unit>cm|in)$").unwrap();
     let hcl_re = Regex::new("^#[0-9a-f]{6}$").unwrap();
     let pid_re = Regex::new("^[0-9]{9}$").unwrap();
 
@@ -96,11 +92,11 @@ fn part2() -> usize {
         "hgt" => hgt_re
             .captures(value)
             .map(|c| {
-                let h = c.get(1).unwrap().as_str().parse().unwrap();
-                match c.get(2).unwrap().as_str() {
+                let h = c["height"].parse().unwrap();
+                match &c["unit"] {
                     "cm" => (150..=193).contains(&h),
                     "in" => (59..=76).contains(&h),
-                    _ => false,
+                    u => panic!("invalid unit: {}", u),
                 }
             })
             .unwrap_or(false),

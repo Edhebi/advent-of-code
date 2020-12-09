@@ -1,3 +1,5 @@
+#![feature(str_split_once)]
+
 #[derive(Debug)]
 struct Policy {
     min: usize,
@@ -5,21 +7,22 @@ struct Policy {
     character: char,
 }
 
-fn parse_line(line: &str) -> Option<(Policy, &str)> {
-    let segments: Vec<&str> = line.split(' ').collect();
-    let minmax: Vec<&str> = segments.get(0)?.split('-').collect();
+fn parse_line(line: &str) -> (Policy, &str) {
+    let (prefix, pass) = line.split_once(':').unwrap();
+    let (min_max, character) = prefix.split_once(' ').unwrap();
+    let (min, max) = min_max.split_once('-').unwrap();
     let policy = Policy {
-        min: minmax.get(0)?.parse().ok()?,
-        max: minmax.get(1)?.parse().ok()?,
-        character: segments.get(1)?.chars().nth(0)?,
+        min: min.parse().unwrap(),
+        max: max.parse().unwrap(),
+        character: character.chars().nth(0).unwrap(),
     };
-    Some((policy, *segments.get(2)?))
+    (policy, pass.trim())
 }
 
 fn common(matcher: impl Fn(&Policy, &str) -> bool) -> usize {
     include_str!("../inputs/day02")
         .lines()
-        .filter_map(parse_line)
+        .map(parse_line)
         .filter(|pair| matcher(&pair.0, pair.1))
         .count()
 }

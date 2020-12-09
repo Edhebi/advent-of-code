@@ -1,14 +1,11 @@
 fn check_slope(input: &str, dx: usize, dy: usize) -> usize {
-    const W: usize = 31;
+    let w = input.lines().nth(0).unwrap().len();
 
     input
         .lines()
         .step_by(dy)
         .enumerate()
-        .filter(|&(y, s)| {
-            let x = (y * dx) % W;
-            s.chars().nth(x).unwrap() == '#'
-        })
+        .filter(|&(y, s)| s.chars().nth((y * dx) % w).unwrap() == '#')
         .count()
 }
 

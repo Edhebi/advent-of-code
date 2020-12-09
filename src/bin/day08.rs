@@ -22,12 +22,13 @@ impl Op {
     }
 
     fn from_str(line: &str) -> Self {
-        let segments: Vec<_> = line.split_whitespace().into_iter().collect();
-        match segments[0] {
-            "nop" => Op::Nop(segments[1].parse().unwrap()),
-            "jmp" => Op::Jmp(segments[1].parse().unwrap()),
-            "acc" => Op::Acc(segments[1].parse().unwrap()),
-            _ => panic!("unknown op"),
+        let (op, acc) = line.split_at(3);
+        let acc = acc.trim().parse().unwrap();
+        match op {
+            "nop" => Op::Nop(acc),
+            "jmp" => Op::Jmp(acc),
+            "acc" => Op::Acc(acc),
+            _ => panic!("unknown op: {}", op),
         }
     }
 }
@@ -43,15 +44,11 @@ fn exec(ops: &[Op]) -> (bool, i32) {
     while !visited[sp] {
         visited[sp] = true;
         match ops[sp] {
-            Op::Nop(_) => {
-                sp += 1;
-            }
-            Op::Jmp(n) => {
-                sp = (sp as isize + n as isize) as usize;
-            }
+            Op::Nop(_) => sp += 1,
+            Op::Jmp(n) => sp = (sp as isize + n as isize) as usize,
             Op::Acc(n) => {
                 sp += 1;
-                acc += n;
+                acc += n
             }
         }
         if sp >= ops.len() {
@@ -62,20 +59,17 @@ fn exec(ops: &[Op]) -> (bool, i32) {
 }
 
 fn find_patch(mut ops: Vec<Op>) -> i32 {
-    let indices: Vec<_> = ops
-        .iter()
-        .enumerate()
-        .filter(|&(_, op)| op.can_flip())
-        .map(|(i, _)| i)
-        .collect();
-    for i in indices {
+    for i in 0..ops.len() {
+        if !ops[i].can_flip() {
+            continue;
+        }
         (&mut ops[i]).flip();
         if let (true, n) = exec(&ops) {
             return n;
         }
         (&mut ops[i]).flip();
     }
-    panic!("no patching found")
+    panic!("no patching found");
 }
 
 fn part1() -> i32 {

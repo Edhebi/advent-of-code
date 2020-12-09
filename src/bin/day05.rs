@@ -2,7 +2,7 @@ fn to_bit(c: char) -> u16 {
     match c {
         'B' | 'R' => 1,
         'F' | 'L' => 0,
-        _ => panic!("unknown character in input"),
+        _ => panic!("unknown character: {}", c),
     }
 }
 
@@ -18,7 +18,6 @@ fn xored_range(min: u16, max: u16) -> u16 {
 fn common<A>(init: A, fold: impl Fn(A, u16) -> A) -> A {
     include_str!("../inputs/day05")
         .lines()
-        .filter(|&s| !s.is_empty())
         .map(to_id)
         .fold(init, fold)
 }

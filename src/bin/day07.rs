@@ -61,11 +61,11 @@ fn part2() -> usize {
         }
         if children
             .iter()
-            .all(|(_, child)| amount.contains_key(child.as_str()))
+            .all(|(_, child)| amount.contains_key(&child[..]))
         {
             let total = children
                 .iter()
-                .map(|(count, color)| count * (1 + amount.get(color.as_str()).unwrap()))
+                .map(|(count, color)| count * (1 + amount[&color[..]]))
                 .sum();
             amount.insert(parent, total);
             stack.pop();
@@ -73,10 +73,10 @@ fn part2() -> usize {
         }
         children
             .iter()
-            .filter(|(_, child)| !amount.contains_key(child.as_str()))
-            .for_each(|(_, child)| stack.push(child.as_str()));
+            .filter(|(_, child)| !amount.contains_key(&child[..]))
+            .for_each(|(_, child)| stack.push(&child[..]));
     }
-    *amount.get("shiny gold").unwrap()
+    amount["shiny gold"]
 }
 
 fn main() {
