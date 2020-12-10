@@ -3,8 +3,8 @@ fn parse_numbers() -> Vec<i32> {
         .lines()
         .map(|x| x.parse().unwrap())
         .collect();
+    numbers.push(0);
     numbers.sort_unstable();
-    numbers.insert(0, 0);
     numbers.push(numbers.last().unwrap() + 3);
     numbers
 }
@@ -27,12 +27,12 @@ fn part1(numbers: &[i32]) -> i32 {
 
 fn part2(numbers: &[i32]) -> usize {
     let n = numbers.len();
-    let mut counts = vec![0usize; n];
+    let mut counts = vec![0; n];
     counts[n - 1] = 1;
-    for i in (0..(n - 1)).rev() {
-        counts[i] = ((i + 1)..(n - 1))
+    for i in (0..n - 1).rev() {
+        counts[i] = (i + 1..n - 1)
             .take_while(|&k| numbers[k] <= numbers[i] + 3)
-            .map(|k| counts[k as usize])
+            .map(|k| counts[k])
             .sum();
     }
     counts[0]
